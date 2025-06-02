@@ -60,10 +60,8 @@ pipeline {
     }
 
     post {
-        always {
-            node {
-                cleanWs()
-            }
-        }
-    }
+		always {
+			cleanWs()
+		}
+	}
 }
