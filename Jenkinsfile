@@ -61,7 +61,7 @@ pipeline {
 
     post {
 		always {
-			node('Built-In Node') {
+			node('Built-In Label') {
 				cleanWs()
 			}
 		}
