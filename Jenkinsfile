@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'Label' }
     environment {
         DOTNET_VERSION = '6.0'
         SOLUTION_FILE = 'CiCdJenkins.sln' // Replace with the solution file name
@@ -61,7 +61,7 @@ pipeline {
 
     post {
 		always {
-			node('Built-In Label') {
+			node('Label') {
 				cleanWs()
 			}
 		}
