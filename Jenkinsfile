@@ -51,7 +51,7 @@ pipeline {
 										"-verb:sync " +
 										"-source:contentPath='${WORKSPACE}\\publish' " +
 										"-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd?site=${SITE_NAME}'," +
-										"username='%IIS_USERNAME%',password='%IIS_PASSWORD%',authType='Basic' " +
+										"username='AMSL\zaber',password='Sevensins7^',authType='Basic' " +
 										"-allowUntrusted"
 
 						// Execute command safely without interpolating secrets in Groovy string
