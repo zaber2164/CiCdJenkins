@@ -5,8 +5,8 @@ pipeline {
         SOLUTION_FILE = 'CiCdJenkins.sln' // Replace with the solution file name
         IIS_SERVER = '192.168.97.22' // Replace with your IIS server IP or hostname
         SITE_NAME = 'CiCdJenkins' // Replace with your IIS Site name
-        IIS_USERNAME = 'webdeploy_user' // User for IIS (with web deploy permissions)
-        IIS_PASSWORD = credentials('webdeploy_user') // Jenkins credentials for IIS
+        IIS_USERNAME = credentials('webdeploy_user_password') // User for IIS (with web deploy permissions)
+        IIS_PASSWORD = credentials('webdeploy_user_username') // Jenkins credentials for IIS
     }
 
     stages {
