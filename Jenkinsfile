@@ -44,19 +44,23 @@ pipeline {
         }
 
         stage('Deploy to IIS') {
-            steps {
-                script {
-                    // Command to use Web Deploy for deployment
-                    def webDeployCmd = """
-                    "C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe" -verb:sync
-                    -source:contentPath='${WORKSPACE}/publish' 
-                    -dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd?site=${SITE_NAME}',username='${IIS_USERNAME}',password='${IIS_PASSWORD}',authType='Basic'
-                    -allowUntrusted
-                    """
-                    bat webDeployCmd
-                }
-            }
-        }
+			steps {
+				withCredentials([usernamePassword(credentialsId: 'webdeploy_user', usernameVariable: 'IIS_USERNAME', passwordVariable: 'IIS_PASSWORD')]) {
+					script {
+						def deployCmd = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" " +
+										"-verb:sync " +
+										"-source:contentPath='${WORKSPACE}\\publish' " +
+										"-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd?site=${SITE_NAME}'," +
+										"username='%IIS_USERNAME%',password='%IIS_PASSWORD%',authType='Basic' " +
+										"-allowUntrusted"
+
+						// Execute command safely without interpolating secrets in Groovy string
+						bat label: 'Deploy to IIS', script: deployCmd
+					}
+				}
+			}
+		}
+
     }
 
     post {
