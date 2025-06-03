@@ -61,7 +61,7 @@ pipeline {
 
     post {
 		always {
-			node('master') {
+			node('Built-In Node') {
 				cleanWs()
 			}
 		}
