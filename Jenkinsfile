@@ -53,7 +53,7 @@ pipeline {
                                         "-verb:sync " +
                                         "-source:contentPath='${WORKSPACE}\\publish' " +
                                         "-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd'," +
-                                        "username='${IIS_USERNAME}',password='${IIS_PASSWORD}',authType='Basic' " +
+                                        "username=%IIS_USERNAME%,password=%IIS_PASSWORD%,authType='Basic' " +
                                         "-allowUntrusted -verbose"
 										
                         // Execute the deployment command
