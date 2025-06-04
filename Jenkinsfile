@@ -42,26 +42,22 @@ pipeline {
         }
  
         stage('Deploy to IIS') {
-            steps {
-                // Use the 'withCredentials' block to securely retrieve the stored username and password
-                withCredentials([usernamePassword(credentialsId: 'webdeploy_user', usernameVariable: 'IIS_USERNAME', passwordVariable: 'IIS_PASSWORD')]) {
-                    script {
-					echo "Deploying with Username: ${IIS_USERNAME}"
-					echo "Deploying with Password: ${IIS_PASSWORD}"
-                        // Using the environment variables for username and password securely
-                        def deployCmd = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" " +
-                                        "-verb:sync " +
-                                        "-source:contentPath='${WORKSPACE}\\publish' " +
-                                        "-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd'," +
-                                        "username=%IIS_USERNAME%,password=%IIS_PASSWORD%,authType='Basic' " +
-                                        "-allowUntrusted -verbose"
-										
-                        // Execute the deployment command
-                        bat label: 'Deploy to IIS', script: deployCmd
-                    }
-                }
+    steps {
+        withCredentials([
+            usernamePassword(credentialsId: 'webdeploy_user', usernameVariable: 'IIS_USERNAME', passwordVariable: 'IIS_PASSWORD')
+        ]) {
+            script {
+                bat label: 'Deploy to IIS', script: """
+                    "C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe" ^
+                    -verb:sync ^
+                    -source:contentPath="${WORKSPACE}\\publish" ^
+                    -dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd?site=${SITE_NAME}',username=%IIS_USERNAME%,password=%IIS_PASSWORD%,authType='Basic' ^
+                    -allowUntrusted
+                """
             }
         }
+    }
+}
  
     }
  
