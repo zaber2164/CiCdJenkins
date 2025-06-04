@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOTNET_VERSION = '6.0'
         SOLUTION_FILE = 'CiCdJenkins.sln' // Replace with the solution file name
-        IIS_SERVER = '192.168.97.22' // Replace with your IIS server IP or hostname
+        IIS_SERVER = 'T-DEV-22' // Replace with your IIS server IP or hostname
         SITE_NAME = 'CiCdJenkins' // Replace with your IIS Site name
         IIS_USERNAME = credentials('webdeploy_user_username') // User for IIS (with web deploy permissions)
         IIS_PASSWORD = credentials('webdeploy_user_password') // Jenkins credentials for IIS
@@ -50,7 +50,7 @@ pipeline {
 						def deployCmd = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" " +
 										"-verb:sync " +
 										"-source:contentPath='${WORKSPACE}\\publish' " +
-										"-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd?site=${SITE_NAME}'," +
+										"-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd'," +
 										"username=%IIS_USERNAME%,password=%IIS_PASSWORD%,authType='Basic' " +
 										"-allowUntrusted"
 
