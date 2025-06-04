@@ -3,19 +3,17 @@ pipeline {
     environment {
         DOTNET_VERSION = '6.0'
         SOLUTION_FILE = 'CiCdJenkins.sln' // Replace with the solution file name
-        IIS_SERVER = '192.168.97.22' // Replace with your IIS server IP or hostname
+        IIS_SERVER = 'T-DEV-22' // Replace with your IIS server IP or hostname
         SITE_NAME = 'CiCdJenkins' // Replace with your IIS Site name
-        //IIS_USERNAME = credentials('webdeploy_user_username') // User for IIS (with web deploy permissions)
-        //IIS_PASSWORD = credentials('webdeploy_user_password') // Jenkins credentials for IIS
     }
-
+ 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/zaber2164/CiCdJenkins.git' // Replace with your GitHub URL
             }
         }
-
+ 
         stage('Restore') {
             steps {
                 script {
@@ -24,7 +22,7 @@ pipeline {
                 }
             }
         }
-
+ 
         stage('Build') {
             steps {
                 script {
@@ -33,7 +31,7 @@ pipeline {
                 }
             }
         }
-
+ 
         stage('Publish') {
             steps {
                 script {
@@ -42,33 +40,34 @@ pipeline {
                 }
             }
         }
-
+ 
         stage('Deploy to IIS') {
-			steps {
-				withCredentials([usernamePassword(credentialsId: 'webdeploy_user', usernameVariable: 'IIS_USERNAME', passwordVariable: 'IIS_PASSWORD')]) {
-					script {
-						def deployCmd = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" " +
-										"-verb:sync " +
-										"-source:contentPath='${WORKSPACE}\\publish' " +
-										"-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd?site=${SITE_NAME}'," +
-										"username=\"AMSL\\zaber\",password=\"Sevensins7^\",authType='Basic' " +
-										"-allowUntrusted"
-
-						// Execute command safely without interpolating secrets in Groovy string
-						bat label: 'Deploy to IIS', script: deployCmd
-					}
-				}
-			}
-		}
-
+            steps {
+                // Use the 'withCredentials' block to securely retrieve the stored username and password
+                withCredentials([usernamePassword(credentialsId: 'webdeploy_user', usernameVariable: 'IIS_USERNAME', passwordVariable: 'IIS_PASSWORD')]) {
+                    script {
+                        // Using the environment variables for username and password securely
+                        def deployCmd = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" " +
+                                        "-verb:sync " +
+                                        "-source:contentPath='${WORKSPACE}\\publish' " +
+                                        "-dest:contentPath='${SITE_NAME}',computerName='https://${IIS_SERVER}:8172/msdeploy.axd'," +
+                                        "username='${IIS_USERNAME}',password='${IIS_PASSWORD}',authType='Basic' " +
+                                        "-allowUntrusted"
+                        // Execute the deployment command
+                        bat label: 'Deploy to IIS', script: deployCmd
+                    }
+                }
+            }
+        }
+ 
     }
-
+ 
     post {
-		always {
-			node('Label') {
-				cleanWs()
-			}
-		}
-	}
-
+        always {
+            node('Label') {
+                cleanWs()
+            }
+        }
+    }
+ 
 }
